@@ -1,0 +1,31 @@
+@keyframes pie-focus {
+  0% {
+      -webkit-transform: perspective(1700px) rotateX(18deg);
+              transform: perspective(1700px) rotateX(18deg);
+      -webkit-animation-timing-function: cubic-bezier(0.77, 0, 0.17, 1);
+              animation-timing-function: cubic-bezier(0.77, 0, 0.17, 1);
+  }
+  36% {
+      -webkit-transform: perspective(1700px) rotateX(0deg);
+              transform: perspective(1700px) rotateX(0deg);
+      -webkit-animation-timing-function: cubic-bezier(0.18, 0, 0.99, 1);
+              animation-timing-function: cubic-bezier(0.18, 0, 0.99, 1);
+  }
+  100% {
+      -webkit-transform: perspective(1700px) rotateX(25deg) rotateZ(2deg);
+              transform: perspective(250px) rotateX(25deg) rotateZ(2deg);
+  }
+}
+
+@keyframes pie-focus-reverse {
+  0% {
+    -webkit-transform: perspective(250px) rotateX(25deg) rotateZ(2deg);
+            transform: perspective(250px) rotateX(25deg) rotateZ(2deg);
+    -webkit-animation-timing-function: cubic-bezier(0.77, 0, 0.17, 1);
+            animation-timing-function: cubic-bezier(0.77, 0, 0.17, 1);
+  }
+  100% {
+    -webkit-transform: perspective(1700px) rotateX(18deg);
+            transform: perspective(1700px) rotateX(18deg);
+  }
+}

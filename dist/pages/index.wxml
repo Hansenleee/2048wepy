@@ -1,0 +1,25 @@
+
+  <view class="home">
+    <view class="header">
+      <view class="inline-block title">2048</view>
+      <view class="area">
+        <view class="column">
+          <view class="top"/>
+          <view class="bottom">菜单</view>
+        </view>
+        <view class="column">
+          <view class="top"/>
+          <view class="bottom">排行榜</view>
+        </view>
+      </view>
+    </view>
+    <view class="board" catchtouchstart="handleTouchStart" catchtouchmove="handleTouchMove">
+      <view class="board-container">
+        <block wx:for="{{list}}" wx:for-index="index" wx:for-item="item" wx:key="index">
+          <view class="flex-1 item">
+            <view style="background:{{item.background}};color:{{item.color}}">{{ item.value > 0 ? item.value : '' }}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>

@@ -1,0 +1,16 @@
+
+  <view class="user-coupons">
+    
+  <view class="tab-wrap">
+    <view class="tab-bg flex">
+      <view class="flex-1 tab-item"  wx:for="{{$tabs$list}}" wx:key="index">
+        <navigator class="{{$tabs$active === index ? 'active' : ''}}" open-type="redirect" url="{{item.url}}">
+          <text>{{item.name}}</text>
+        </navigator>
+      </view>
+    </view>
+  </view>
+
+    <view class="content">
+    </view>
+  </view>

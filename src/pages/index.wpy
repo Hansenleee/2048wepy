@@ -1,0 +1,249 @@
+<style lang="less">
+  @import "../assets/style/index.wxss";
+
+  .home {
+    width: 100vw;
+    height: 100vh;
+    background: #faf8f0;
+    padding: 20px;
+  }
+  .inline-block {
+    display: inline-block;
+  }
+  .header {
+    position: relative;
+    padding-left: 100px;
+    height: 150px;
+
+    & .title {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: #e6c442;
+      width: 100px;
+      height: 100px;
+      border-radius: 10px;
+      line-height: 100px;
+      text-align: center;
+      color: #fff;
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    & .area {
+      height: 100px;
+
+      & .column {
+        width: 50%;
+        padding-left: 20px;
+        height: 100%;
+        display: inline-block;
+        color: #fff;
+        text-align: center;
+        font-size: 24px;
+
+        & .top {
+          height: 55px;
+          background: #b9ada1;
+          border-radius: 10px;
+        }
+
+        & .bottom {
+          background: #e29c66;
+          height: 35px;
+          margin-top: 10px;
+          border-radius: 10px;
+          line-height: 35px;
+          color: #fff;
+        }
+      }
+    }
+  }
+  .board {
+    width: 100%;
+    background: #b9ada1;
+    height: 0;
+    padding-bottom: 100%;
+    border-radius: 6px;
+    position: relative;
+
+    & .board-container{
+      padding: 5px;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      & .item {
+        width: 25%;
+        height: 25%;
+        float: left;
+        padding: 6px;
+
+        & > view {
+          background: #cac0b5;
+          width: 100%;
+          height: 100%;
+          border-radius: 8px;
+          color: #766e66;
+          font-size: 26px;
+          font-weight: 800;
+          text-align: center;
+          line-height: 69px;
+          font-weight: 800;
+        }
+      }
+    }
+  }
+</style>
+<template>
+  <view class="home">
+    <view class="header">
+      <view class="inline-block title">2048</view>
+      <view class="area">
+        <view class="column">
+          <view class="top"></view>
+          <view class="bottom">菜单</view>
+        </view>
+        <view class="column">
+          <view class="top"></view>
+          <view class="bottom">排行榜</view>
+        </view>
+      </view>
+    </view>
+    <view class="board"
+      catchtouchstart="handleTouchStart"
+      catchtouchmove="handleTouchMove">
+      <view class="board-container">
+        <repeat for="{{list}}" key="index" index="index">
+          <view class="flex-1 item">
+            <view style="background:{{item.background}};color:{{item.color}}">{{ item.value > 0 ? item.value : '' }}</view>
+          </view>
+        </repeat>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import Base from '../utils/model/base'
+  import Square from '../utils/model/square'
+
+  const backgroundColor = {
+    0: '#cac0b5',
+    2: '#eee5de',
+    4: '#ede1cb',
+    8: '#f3b17d',
+    16: '#f79667',
+    32: '#f67e5c',
+    64: '#f75f38',
+    128: '#f4d76f',
+    256: '#f2d04b',
+    512: '#e5c12b',
+    1024: '#e3ba14',
+    2048: '#efc32f',
+    9999: '#ff3830'
+  }
+
+  export default class Index extends wepy.page {
+    config = {
+      backgroundColor: '#000000'
+    }
+
+    data = {
+      list: []
+    }
+
+    computed = {
+    }
+
+    methods = {
+      /**
+       * 触摸开始事件
+       * @param {Object} e - 鼠标实例
+       */
+      handleTouchStart(e) {
+        const touches = e.touches[0]
+        this._touchStartX = touches.clientX
+        this._touchStartY = touches.clientY
+        this._hasMove = false
+      },
+      /**
+       * 触摸移动事件
+       * @param {Object} e - 鼠标实例
+       */
+      handleTouchMove(e) {
+        if (this._hasMove) return
+        const touches = e.touches[0]
+        const x = touches.clientX
+        const y = touches.clientY
+        const differX = Math.abs(x - this._touchStartX)
+        const differY = Math.abs(y - this._touchStartY)
+        if (differX >= differY && differX > 50) {
+          this.move(x > this._touchStartX ? 'right' : 'left')
+        } else if (differX < differY && differY > 50) {
+          this.move(y > this._touchStartY ? 'bottom' : 'top')
+        }
+      }
+    }
+    /**
+     * 触发移动
+     * @param {String} direction - 方向
+     */
+    move(direction) {
+      if (this._base) {
+        this._base.move(direction)
+        this._hasMove = true
+      }
+    }
+
+    /**
+     * 获取数组
+     */
+    getArray(num) {
+      let str = '0'
+      str = str.repeat(16)
+      const list = str.split('')
+      list.forEach((item, index) => {
+        list[index] = {
+          value: parseInt(item),
+          background: backgroundColor[0],
+          color: '#766e66'
+        }
+      })
+      return list
+    }
+
+    /**
+     * 设置值
+     * @param {Number} index - 设置的序号
+     * @param {Number} val - 设置的值
+     */
+    setVal(index, val) {
+      const list = this.list
+      if (index < list.length) {
+        const item = list[index]
+        item.value = val
+        item.background = backgroundColor[val]
+        item.color = val > 4 ? '#fff' : '#766e66'
+      }
+    }
+
+    onReady() {
+      this.list = this.getArray(16)
+      this._base = new Base()
+      this._squares = []
+      for (let index = 0; index < 16; index++) {
+        const x = index % 4
+        const y = (index - x) / 4
+        this._squares.push(new Square({
+          x,
+          y,
+          setVal: this.setVal.bind(this)
+        }))
+      }
+      this._base.init(this._squares)
+    }
+  }
+</script>

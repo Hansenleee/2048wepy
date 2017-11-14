@@ -1,0 +1,95 @@
+<style lang="less">
+@import "assets/style/iconfont.wxss";
+@import "assets/style/global.wxss";
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index'
+    ],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#000',
+      navigationBarTitleText: '2048',
+      navigationBarTextStyle: 'white',
+      backgroundColor: '#f3f3f3'
+    }
+  }
+
+  constructor () {
+    super()
+    // 修复小程序的请求
+    this.use('requestfix')
+    // 小程序的API都promise化
+    this.use('promisify')
+  }
+
+  onLaunch() {
+    // 初始化全局变量
+    this.initGlobalData()
+    // 获取系统信息
+    this.getSystemInfo()
+    // 登录授权
+    // this.userLogin()
+  }
+
+  initGlobalData() {
+    this.globalData = {
+      system: {}
+    }
+  }
+
+  getSystemInfo() {
+    wepy.getSystemInfo().then((res) => {
+      this.globalData.system = res
+    })
+  }
+
+  userLogin() {
+    return new Promise((resolve, reject) => {
+      wepy.login().then((res) => {
+        if (res.code) {
+          // 接口
+          resolve(res)
+        } else {
+          wepy.showModal({
+            title: '登录失败',
+            content: res.errMsg
+          })
+          reject(res)
+        }
+      }).catch((res) => {
+        wepy.showModal({
+          title: '登录失败',
+          content: res.errMsg
+        })
+        reject(res)
+      })
+    })
+  }
+
+  getUserInfo() {
+    return new Promise((resolve, reject) => {
+      wepy.getUserInfo().then((res) => {
+        // 接口
+        resolve(res)
+      }).catch((res) => {
+        reject(res)
+      })
+    })
+  }
+}
+</script>
