@@ -1,8 +1,11 @@
 /**
  * 基类
- * --------
+ * ----------
  * 待优化点：
  * 1、避免无效的循环遍历-（例：在进行清理时，如果对应方向上都是空的square时，停止遍历）
+ * 2、考虑移动的动画效果-（目前的模型不支持移动）
+ * 3、每次移动判断行列是否可移动、是否结束
+ * 4、计算得分
  */
 
 const _actions = {
@@ -29,7 +32,7 @@ const _actions = {
     }
     const list = []
     let key = null
-    while (count != 0) {
+    while (count !== 0) {
       key = _actions.getRandom(keys.length)
       list.push(key)
       keys.splice(key, 1)
@@ -78,7 +81,7 @@ export default class Base {
     const initConfig = this.constructor.initConfig
     const randoms = _actions.getRandomFromArray(this.squares, initConfig.initValueCount)
     randoms.forEach((index) => {
-      this.squares[index].setVal(this.getRandomValue())
+      this.squares[index].setVal(this.getRandomValue(), true)
     })
   }
 
@@ -206,6 +209,7 @@ export default class Base {
         square.combine(direction)
       }
     })
+    this.handleSquaresMoveAnimate(list)
   }
 
   /**
@@ -235,7 +239,17 @@ export default class Base {
     })
     const randoms = _actions.getRandomFromArray(emptys, createSquareOnMove)
     randoms.forEach((index) => {
-      this.squares[emptys[index]].setVal(this.getRandomValue())
+      this.squares[emptys[index]].setVal(this.getRandomValue(), true)
+    })
+  }
+
+  /**
+   * 执行移动的动画效果
+   * @param {Array} list - 需要执行的square的数组
+   */
+  handleSquaresMoveAnimate(list) {
+    list.forEach((item) => {
+      item.handleMoveAnimate()
     })
   }
 }

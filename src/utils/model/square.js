@@ -9,7 +9,12 @@ export default class Square extends Base {
     super(options)
     this.x = options.x
     this.y = options.y
+    // 记录移动路径的数组，动画后需要删除
+    this.moveRoute = []
+    // square值改变的回调
     this.setValBack = options.setVal
+    // 配置移动的动画回调
+    this.moveAnimateFn = options.moveAnimateFn
     this.init()
   }
 
@@ -25,13 +30,16 @@ export default class Square extends Base {
   /**
    * 设定值
    * @param {Number} value - 数值
+   * @param {Boolean} callBack - 是否同步到视图
    */
-  setVal(value) {
+  setVal(value, callBack = false) {
     // 校验value是不是2的n次方
     const n = Math.log(value) / Math.log(2)
     if (n == parseInt(n) || value === 0) {
       this.value = value
-      this.setValBack(this.index, value)
+      if (callBack) {
+        this.setValBack(this.index, value)
+      }
     }
   }
 
@@ -92,6 +100,7 @@ export default class Square extends Base {
       // 移入当前块
       this.setVal(target.value)
       target.setVal(0)
+      target.moveTo(this)
     }
   }
   
@@ -106,6 +115,38 @@ export default class Square extends Base {
       // 进行合并
       this.setVal(this.value * 2)
       target.setVal(0)
+      target.moveTo(this)
+    }
+  }
+
+  /**
+   * 记录当前移动到的位置
+   * @param {Square} target - 移动的目标
+   */
+  moveTo(target) {
+    this.moveRoute.push({
+      x: target.x,
+      y: target.y
+    })
+  }
+
+  /**
+   * 执行移动的动画
+   */
+  handleMoveAnimate() {
+    const moveRoute = this.moveRoute
+    const length = moveRoute.length
+    // 移动最后计算合并的值
+    if (length > 0) {
+      const finalMove = moveRoute[length - 1]
+      const finalTarget = this.getSquare.call(this.base, finalMove.x, finalMove.y)
+      this.setVal(0, true)
+      finalTarget.setVal(finalTarget.value + this.value, true)
+      this.moveRoute = []
+      // 动画效果
+      if (this.moveAnimateFn) {
+        this.moveAnimateFn(this.index, finalMove)
+      }
     }
   }
 }
