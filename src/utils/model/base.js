@@ -56,6 +56,16 @@ export default class Base {
   }
 
   constructor(options = {}){
+    // 每次移动判断是否移动过，默认为false
+    this.hasMoved = false
+    // 游戏是否终止
+    this.isOver = false
+    // 游戏终止回调
+    this.gameOverFn = options.gameOverFn
+    // 初始得分
+    this.score = 0
+    // 得分回调函数
+    this.scoreFn = options.scoreFn
   }
 
   /**
@@ -145,7 +155,12 @@ export default class Base {
     // 移动计算低分
     // 判断是否结束了，不能继续移动
     // 每次移动会增加新的值
-    this.createRandomValue()
+    if (this.hasMoved) {
+      this.createRandomValue()
+    } else {
+      // 如果没元素移动下，判断是否game over
+      this.isGameOver()
+    }
   }
 
   /**
@@ -248,8 +263,41 @@ export default class Base {
    * @param {Array} list - 需要执行的square的数组
    */
   handleSquaresMoveAnimate(list) {
+    this.hasMoved = false
     list.forEach((item) => {
+      const moveRoute = item.moveRoute
+      if (moveRoute && moveRoute.length > 0) {
+        this.hasMoved = true
+      }
       item.handleMoveAnimate()
     })
+  }
+
+  /**
+   * 判断游戏手终止
+   */
+  isGameOver() {
+    if (this.hasMoved) return false
+    this.squares.forEach((square) => {
+      if (square.value === 0) {
+        return false
+      }
+    })
+    this.isOver = true
+    if (this.gameOverFn) {
+      this.gameOverFn()
+    }
+    return true
+  }
+
+  /**
+   * 获取得分
+   * 得分规则是：两次合并的value总和为本次移动获取的得分
+   */
+  getScore(score) {
+    this.score += score
+    if (this.scoreFn) {
+      this.scoreFn(score)
+    }
   }
 }

@@ -130,7 +130,9 @@
       <view class="inline-block title">2048</view>
       <view class="area">
         <view class="column">
-          <view class="top"></view>
+          <view class="top">
+            得分
+          </view>
           <view class="bottom">菜单</view>
         </view>
         <view class="column">
@@ -181,7 +183,8 @@
     }
 
     data = {
-      list: []
+      list: [],
+      score: 0,
     }
 
     computed = {
@@ -275,9 +278,28 @@
       // item.className = 'twinkle'
     }
 
+    /**
+     * 游戏结束
+     */
+    gameOverFn() {
+      wepy.showToast({
+        title: 'GAME OVER!'
+      })
+    }
+
+    /**
+     * 得分回调
+     */
+    getScore(value) {
+      this.score += parseInt(value)
+    }
+
     onReady() {
       this.list = this.getArray(16)
-      this._base = new Base()
+      this._base = new Base({
+        gameOverFn: this.gameOverFn.bind(this),
+        scoreFn: this.getScore.bind(this)
+      })
       this._squares = []
       for (let index = 0; index < 16; index++) {
         const x = index % 4

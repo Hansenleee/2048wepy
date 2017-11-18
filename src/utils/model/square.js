@@ -113,9 +113,12 @@ export default class Square extends Base {
     const target = this.getDirectionTarget(direction)
     if (target && target.value === this.value && this.value !== 0) {
       // 进行合并
-      this.setVal(this.value * 2)
+      const value = this.value * 2
+      this.setVal(value)
       target.setVal(0)
       target.moveTo(this)
+      // 没增加一次计算一次得分
+      this.getScore(value)
     }
   }
 
