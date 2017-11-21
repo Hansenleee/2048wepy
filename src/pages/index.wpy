@@ -184,7 +184,7 @@
 
     data = {
       list: [],
-      score: 0,
+      score: 0
     }
 
     computed = {
